@@ -1,25 +1,29 @@
+#include <Arduino.h>
+#include <Encoder.h>
+#include <Metro.h>
+#include <PID_v1.h>
+#include <Servo.h>
 
-class Motor{
+class Motor
+{
 
     struct state
     {
         /* data */
     };
 
-typedef enum {
-  STOP, 
-  START,
-  EAST, 
-  WEST,
-  OPEN,
-  CLOSE,
-  EMERGENCY
-}trainstate;
-    
+    typedef enum
+    {
+        STOP,
+        START,
+        EAST,
+        WEST,
+        OPEN,
+        CLOSE,
+        EMERGENCY
+    } trainstate;
 
-
-
-    public:
+public:
     Motor();
     void Stop();
     void Setspeed();
@@ -27,12 +31,20 @@ typedef enum {
     void Forward();
     void Reverse();
 
-
-
-    private:
-
+private:
+    double Setpoint;
+    double Input;
+    double Output;
     long motorOut;
-    long setPoint;
+    long oldPosition;
+    long disthold;
+    bool doorState;
+    int stopState;
+    Servo motor;
+    Servo door;
+    Encoder myEnc(int, int);
+    Metro metroStop; 
+    Metro doorTime; 
 
-
+   
 };
