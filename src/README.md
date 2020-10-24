@@ -2,7 +2,7 @@
 
 #include <MetroDoor.h>
 
-MetroDoor mydoor(13); // value input is for the pin the door is atached on the arduino.
+MetroDoor mydoor(13); // value input is for the pin the door is attached on the arduino.
 
 mydoor.open(); // will open the door
 mydoor.close();// will close the door

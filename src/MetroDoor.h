@@ -1,4 +1,3 @@
-
 #include <Metro.h>
 #include <Servo.h>
 #include <Arduino.h>
@@ -6,17 +5,18 @@
 class MetroDoor
 
 {
+    Servo door;
+    Metro time = Metro(5000);
 
 public:
     MetroDoor(int);
     bool open();
     bool close();
+    void compute(int);
 
 private:
-    bool door_state_closed;
-    bool door_state_opened;
-    int last_closed_state;
-    int last_opened_state;
-    Servo door;
-    Metro time = Metro(5000);
+    bool closed;
+    bool opened;
+    int state;
+    int hook;
 };

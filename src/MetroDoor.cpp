@@ -3,50 +3,63 @@
 MetroDoor ::MetroDoor(int pin)
 {
     door.attach(pin);
-    door_state_closed = false;
-    door_state_opened = false;
-}
-
-bool MetroDoor::close()
-{
-    if (door_state_closed == true)
-    {
-        door.writeMicroseconds(1500);
-        return true;
-    }
-
-    if (last_closed_state == 0)
-    {
-        time.reset();
-        last_closed_state = 1;
-        door.writeMicroseconds(2000);
-    }
-
-    if (time.check() == 1)
-    {
-        door_state_closed = true;
-    }
-    return false;
+    closed = false;
+    opened = false;
+    state = 0;
+    hook = 0;
 }
 
 bool MetroDoor::open()
 {
-    if (door_state_opened == true)
+    if (opened == true)
     {
-        door.writeMicroseconds(1500);
         return true;
     }
+    compute(1);
+    return false;
+}
 
-    if (last_opened_state == 0)
+bool MetroDoor::close()
+{
+    if (closed == true)
+    {
+        return true;
+    }
+    compute(-1);
+    return false;
+}
+
+void MetroDoor::compute(int val) // 1 = open; -1 = close;
+{
+    if (val == 1 && state == 0)
     {
         time.reset();
-        last_opened_state = 1;
-        door.writeMicroseconds(1000);
+        state = 1;
+        hook = val;
+        door.writeMicroseconds(1700);
+    }
+    else if (val == -1 && state == 0)
+    {
+        time.reset();
+        state = 1;
+        hook = val;
+        door.writeMicroseconds(1300);
     }
 
     if (time.check() == 1)
     {
-        door_state_opened = true;
+        state = 0;
+        door.writeMicroseconds(1500);
+        if (hook == 1)
+        {
+            opened = true;
+            closed = false;
+        }
+        else if (hook == -1)
+        {
+            closed = true;
+            opened = false;
+        }
+        return;
     }
-    return false;
 }
