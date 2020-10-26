@@ -1,69 +1,129 @@
 #include "Motor.h"
-/*
-Motor ::Motor()
+
+Motor ::Motor(unsigned int pin)
 {
-    oldPosition = -999;
-    motorOut = 1500;
-    doorState = false;
-    stopState = HIGH;
-    motor.attach(13);
-    door.attach(12);
-    myEnc(22,23);
-    double consKp = 0.1, consKi = 0.0001, consKd = 0.2;
-    PID myPID(&Input, &Output, &Setpoint, consKp, consKi, consKd, DIRECT);
-  //  Metro metroStop = Metro(0);
-  //  Metro doorTime = Metro(0);
-    
+  motor.attach(pin);
+  preStop = 0;
+  motorOut = 1500;
 }
 
-void Motor ::Stop()
+void Motor::motorwrite()
 {
-    if (motorOut != 1500)
+
+  if (motorOut >= 2000)
   {
-    int val;
+    motorOut = 2000;
+  }
+  else if (motorOut <= 1000)
+  {
+    motorOut = 1000;
+  }
+  motor.write(motorOut);
+}
 
-    if (motorOut > 1500)
-    {
-      val = -1;
-    }
-    else if (motorOut < 1500)
-    {
-      val = 1;
-    }
-    else
-    {
-      val = 0;
-    }
+bool Motor ::Stop()
+{
+  if (motorOut != 1500)
+  {
+    unsigned long stopMillis = millis();
 
-    if (metroStop.check() == 1) // check if the metro has passed its interval .
+    if (stopMillis - preStop >= 10) // check if the metro has passed its interval .
     {
-      if (stopState == HIGH)
+      preStop = stopMillis;
+      if (motorOut > 1500)
       {
-        stopState = LOW;
-        motorOut = +val;
+        motorOut--;
       }
-      else
+      else if (motorOut < 1500)
       {
-        stopState = HIGH;
+        motorOut++;
       }
-      motor.write(motorOut);
+      motorwrite();
     }
   }
+  return true;
 }
 
-void Motor ::Forward()
+bool Motor::Start()
 {
+  if (motorOut != speed)
+  {
+    unsigned long slow = millis();
+
+    if (slow - pSlow >= 10)
+    {
+      pSlow = slow;
+
+      if (dir == 1 && motorOut != speed)
+      {
+        if (motorOut > speed)
+        {
+          motorOut--;
+        }
+        else if (motorOut < speed)
+        {
+          motorOut++;
+        }
+      }
+      else if (dir == -1 && motorOut != speed)
+      {
+        if (motorOut > speed)
+        {
+          motorOut--;
+        }
+        else if (motorOut < speed)
+        {
+          motorOut++;
+        }
+      }
+      motorwrite();
+    }
+    return false;
+  }
+  return true;
 }
 
-void Motor ::Reverse()
+void Motor::Dir_Speed(int dir_val, unsigned int speed_val)
 {
-}
+  if (dir_val == dir && speed_val == speed_hold)  // if the value already exist return
+  {
+    return;
+  }
+  speed_hold = speed_val;
 
-void Motor ::SetDistance()
-{
+  if (dir_val == -1)
+  {
+    dir = -1;
+    speed = map(speed_hold, 0, 255, 1500, 1000);
+  }
+  else if (dir_val == 1)
+  {
+    dir = 1;
+    speed = map(speed_hold, 0, 255, 1500, 2000);
+  }
 }
-
-void Motor::Setspeed()
+/*
+void Motor::SetDistance(long var)
 {
+
+  if (var != Setpoint)
+  { // checks if we received new value and updates setpoint.
+    Setpoint = var;
+  }
+  int out;
+  double gap = (Setpoint - Input);
+  if (gap < 0)
+  {
+    myPID.SetControllerDirection(REVERSE);
+    out = map(Output, 0, 500, 1500, 2000);
+  }
+  else
+  {
+    myPID.SetControllerDirection(DIRECT);
+    out = map(Output, 0, 500, 1500, 1000);
+  }
+  myPID.Compute();
+  value.motorOut = out;
+  motorwrite();
 }
 */
