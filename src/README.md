@@ -16,3 +16,17 @@ while(mydoor.open() != true){
 
 # Motor  library
 
+#include <motor.h>
+
+Motor mymotor(13); // pin connected to the motor on the arduino
+
+mymotor.Dir_Speed(1,255);   // set the dirrection 1 or -1 and 0,255 is the speed.
+
+mymotor.Stop(); stops the motor from the current speed. Returns true when the motor has completely stopped.
+
+mymotor.start() starts the motor. returns true when motor has reached set speed.
+
+mymotor.SetDIstance(10000); it will use PID to reach that set pint of 10000 rotations.
+
+
+
