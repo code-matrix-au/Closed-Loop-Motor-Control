@@ -31,22 +31,25 @@ bool MetroDoor::close()
 
 void MetroDoor::compute(int val) // 1 = open; -1 = close;
 {
+    unsigned long currentMillis = millis();
+
     if (val == 1 && state == 0)
     {
-        time.reset();
+
+        previousMillis = currentMillis;
         state = 1;
         hook = val;
-        door.writeMicroseconds(1700);
+        door.writeMicroseconds(1600);
     }
     else if (val == -1 && state == 0)
     {
-        time.reset();
+        previousMillis = currentMillis;
         state = 1;
         hook = val;
-        door.writeMicroseconds(1300);
+        door.writeMicroseconds(1400);
     }
 
-    if (time.check() == 1)
+    if (currentMillis - previousMillis >= 5000)
     {
         state = 0;
         door.writeMicroseconds(1500);
